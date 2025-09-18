@@ -2,6 +2,13 @@
 
 import { useState } from 'react';
 import { LambdaClient, InvokeCommand } from "@aws-sdk/client-lambda";
+import { Authenticator } from '@aws-amplify/ui-react';
+import { Amplify } from 'aws-amplify';
+import { fetchAuthSession } from 'aws-amplify/auth';
+import amplifyconfig from '../amplifyconfiguration.json';
+import '@aws-amplify/ui-react/styles.css';
+
+Amplify.configure(amplifyconfig);
 
 interface Message {
   text: string;
@@ -9,7 +16,7 @@ interface Message {
   type?: 'sql' | 'summary';
 }
 
-export default function Home() {
+function ChatInterface({ user, signOut }: any) {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -18,24 +25,6 @@ export default function Home() {
     }
   ]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isSignedIn, setIsSignedIn] = useState(false);
-  const [credentials, setCredentials] = useState({ accessKey: '', secretKey: '' });
-
-  const handleSignIn = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (credentials.accessKey && credentials.secretKey) {
-      setIsSignedIn(true);
-    }
-  };
-
-  const handleSignOut = () => {
-    setIsSignedIn(false);
-    setCredentials({ accessKey: '', secretKey: '' });
-    setMessages([{
-      text: "Hello! I'm your OMOP Healthcare Assistant. Ask me about patients, procedures, medications, or any healthcare data.",
-      sender: 'bot'
-    }]);
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,12 +36,13 @@ export default function Home() {
     setInput('');
 
     try {
+      // Get AWS credentials from Amplify
+      const session = await fetchAuthSession();
+      const credentials = session.credentials;
+
       const lambdaClient = new LambdaClient({
         region: "us-east-1",
-        credentials: {
-          accessKeyId: credentials.accessKey,
-          secretAccessKey: credentials.secretKey,
-        },
+        credentials: credentials
       });
 
       const command = new InvokeCommand({
@@ -91,58 +81,6 @@ export default function Home() {
     }
   };
 
-  if (!isSignedIn) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-        <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full mx-4">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">
-              OMOP Healthcare Assistant
-            </h1>
-            <p className="text-gray-600">
-              Sign in with your AWS credentials
-            </p>
-          </div>
-          
-          <form onSubmit={handleSignIn} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                AWS Access Key ID
-              </label>
-              <input
-                type="text"
-                value={credentials.accessKey}
-                onChange={(e) => setCredentials(prev => ({ ...prev, accessKey: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                AWS Secret Access Key
-              </label>
-              <input
-                type="password"
-                value={credentials.secretKey}
-                onChange={(e) => setCredentials(prev => ({ ...prev, secretKey: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-            
-            <button
-              type="submit"
-              className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-            >
-              Sign In
-            </button>
-          </form>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="container mx-auto px-4 py-8">
@@ -154,11 +92,11 @@ export default function Home() {
                 OMOP Healthcare Assistant
               </h1>
               <p className="text-gray-600">
-                Intelligent SQL queries for healthcare data analysis
+                Welcome, {user.username} | Intelligent SQL queries for healthcare data
               </p>
             </div>
             <button
-              onClick={handleSignOut}
+              onClick={signOut}
               className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
             >
               Sign Out
@@ -228,5 +166,13 @@ export default function Home() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Authenticator>
+      {({ signOut, user }) => <ChatInterface user={user} signOut={signOut} />}
+    </Authenticator>
   );
 }
