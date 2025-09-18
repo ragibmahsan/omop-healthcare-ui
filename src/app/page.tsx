@@ -20,7 +20,7 @@ function ChatInterface({ user, signOut }: any) {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
     {
-      text: "Hello! I'm your OMOP Healthcare Assistant. Ask me about patients, procedures, medications, or any healthcare data.",
+      text: "Hello! I'm your healthcare Assistant. Ask me about patients, procedures, medications, or any healthcare data regarding this hospital and I can show you how we get the data from our OMOP database.",
       sender: 'bot'
     }
   ]);
@@ -89,7 +89,7 @@ function ChatInterface({ user, signOut }: any) {
           <div className="text-center mb-8 flex justify-between items-center">
             <div className="flex-1">
               <h1 className="text-4xl font-bold text-gray-900 mb-2">
-                OMOP Healthcare Assistant
+                InterSystems Healthcare OMOP Assistant
               </h1>
               <p className="text-gray-600">
                 Welcome, {user.username} | Intelligent healthcare data analysis
