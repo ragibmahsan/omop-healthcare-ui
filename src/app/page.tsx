@@ -82,60 +82,60 @@ function ChatInterface({ user, signOut }: any) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8 flex justify-between items-center">
             <div className="flex-1">
-              <h1 className="text-4xl font-bold text-gray-800 mb-2">
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">
                 OMOP Healthcare Assistant
               </h1>
               <p className="text-gray-600">
-                Welcome, {user.username} | Intelligent SQL queries for healthcare data
+                Welcome, {user.username} | Intelligent healthcare data analysis
               </p>
             </div>
             <button
               onClick={signOut}
-              className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
+              className="bg-gray-900 text-white px-6 py-2 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors font-medium"
             >
               Sign Out
             </button>
           </div>
 
           {/* Chat Container */}
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-200">
             {/* Messages */}
-            <div className="h-96 overflow-y-auto p-6 space-y-4">
+            <div className="h-96 overflow-y-auto p-6 space-y-4 bg-gray-50">
               {messages.map((message, index) => (
                 <div
                   key={index}
                   className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                  <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
+                  <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl shadow-sm ${
                     message.sender === 'user'
-                      ? 'bg-blue-500 text-white'
+                      ? 'bg-gray-900 text-white'
                       : message.type === 'sql'
-                      ? 'bg-gray-100 text-gray-800 font-mono text-sm'
-                      : 'bg-gray-100 text-gray-800'
+                      ? 'bg-white text-gray-900 font-mono text-sm border border-gray-200'
+                      : 'bg-white text-gray-900 border border-gray-200'
                   }`}>
                     {message.type === 'sql' && (
-                      <div className="text-xs text-blue-600 font-semibold mb-1">SQL Query:</div>
+                      <div className="text-xs text-gray-600 font-semibold mb-2 uppercase tracking-wide">SQL Query</div>
                     )}
                     {message.type === 'summary' && (
-                      <div className="text-xs text-green-600 font-semibold mb-1">Summary:</div>
+                      <div className="text-xs text-gray-600 font-semibold mb-2 uppercase tracking-wide">Analysis Summary</div>
                     )}
-                    <div className="whitespace-pre-wrap">{message.text}</div>
+                    <div className="whitespace-pre-wrap leading-relaxed">{message.text}</div>
                   </div>
                 </div>
               ))}
               
               {isLoading && (
                 <div className="flex justify-start">
-                  <div className="bg-gray-100 text-gray-800 px-4 py-2 rounded-2xl">
-                    <div className="flex items-center space-x-2">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
-                      <span>Analyzing your query...</span>
+                  <div className="bg-white text-gray-900 px-4 py-3 rounded-2xl border border-gray-200 shadow-sm">
+                    <div className="flex items-center space-x-3">
+                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-300 border-t-gray-900"></div>
+                      <span className="text-gray-700">Analyzing your healthcare query...</span>
                     </div>
                   </div>
                 </div>
@@ -143,20 +143,20 @@ function ChatInterface({ user, signOut }: any) {
             </div>
 
             {/* Input Form */}
-            <form onSubmit={handleSubmit} className="border-t p-4">
+            <form onSubmit={handleSubmit} className="border-t border-gray-200 p-6 bg-white">
               <div className="flex space-x-4">
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder="Ask about patients, procedures, medications..."
+                  placeholder="Ask about patients, procedures, medications, or healthcare data..."
                   disabled={isLoading}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 text-gray-900 placeholder-gray-500 bg-white transition-colors"
                 />
                 <button
                   type="submit"
                   disabled={isLoading || !input.trim()}
-                  className="px-6 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="px-8 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
                 >
                   Send
                 </button>
